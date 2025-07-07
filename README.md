@@ -1,118 +1,149 @@
-# LAMP Stack Deployment on AWS with Aurora, NGINX Reverse Proxy, and CloudWatch Monitoring
+LAMP Stack Deployment on AWS with ECS, Aurora, NGINX Reverse Proxy, and CloudWatch Monitoring
+This project demonstrates how to deploy a secure, scalable, and observable LAMP (Linux, Apache, MySQL-compatible Aurora, PHP) stack application on AWS. It includes reverse proxying via NGINX, containerization via Docker, and deployment to Amazon ECS using AWS Copilot CLI. Monitoring, logging, and alerting are integrated with CloudWatch.
 
-This project demonstrates how to deploy a secure and observable LAMP (Linux, Apache, MySQL-compatible Aurora, PHP) stack application on AWS. It follows best practices from the AWS Well-Architected Framework, including real-time monitoring, centralized logging, and alerting using CloudWatch.
-
-## 🔗 Live Demo
-
+🔗 Live Demo
 Access the deployed PHP CRUD application:
 
-👉 [http://54.72.80.82/index.php](http://54.72.80.82/index.php)
+👉 http://lamp-a-publi-rovkasjtjmyu-1026018692.eu-west-1.elb.amazonaws.com/
 
----
+📐 Project Architecture
+pgsql
+Copy
+Edit
+                        +---------------------------+
+                        |        End User           |
+                        +------------+--------------+
+                                     |
+                          HTTPS / HTTP Request
+                                     |
+                            +--------v--------+
+                            |     NGINX       |  (Reverse Proxy - port 80)
+                            +--------+--------+
+                                     |
+                            Proxy to Apache (port 8080)
+                                     |
+                            +--------v--------+
+                            |    Apache + PHP |  (App Server)
+                            +--------+--------+
+                                     |
+                                 PDO/MySQL
+                                     |
+                       +-------------v----------------+
+                       |  Amazon Aurora (MySQL) RDS   |
+                       +------------------------------+
 
-## 📐 Project Architecture
+For ECS deployment:
 
-- **Client** → NGINX (Reverse Proxy on port 80)
-- **Web Server** → Apache HTTP Server (on port 8080)
-- **App Language** → PHP
-- **Database** → Amazon Aurora (MySQL-compatible)
-- **Monitoring** → CloudWatch Agent
-- **Logging** → CloudWatch Logs
-- **Alerting** → CloudWatch Alarms + SNS Email Notifications
+pgsql
+Copy
+Edit
+                            +------------------------------+
+                            |        AWS Copilot CLI       |
+                            +------------------------------+
+                                       |
+                                       v
++----------------------+     +---------------------+     +----------------------+
+|   ECS Cluster        | --> |   Fargate Service   | --> | Application Load Balancer |
++----------------------+     +---------------------+     +----------------------+
+                                       |
+                                Dockerized PHP-Apache App
+                                       |
+                               +-------v--------+
+                               | Aurora DB (RDS)|
+                               +----------------+
+📁 Application Structure
+Deployed in /var/www/html/:
 
-User Request
-↓
-[ NGINX (port 80) ]
-↓
-[ Apache (port 8080) ]
-↓
-[ Aurora MySQL DB ]
+index.php – Display all records
 
-markdown
-Copy code
+create.php – Add a new entry
 
----
+update.php – Edit a record
 
-## 📁 Application Structure
+delete.php – Delete a record
 
-Deployed in `/var/www/html/`:
-- `index.php` – Display all records
-- `create.php` – Add a new entry
-- `update.php` – Edit a record
-- `delete.php` – Delete a record
-- `db.php` – Database connection
-- `info.php` – Detailed view
+db.php – Database connection
 
----
+info.php – Detailed view
 
-## 🚀 Deployment Steps
+🚀 Deployment Steps
+✅ 1. Infrastructure Provisioning
+ECS Fargate cluster via AWS Copilot
 
-### ✅ 1. Infrastructure Provisioning
-- EC2 instance in a public subnet (`Lampstack`)
-- Aurora MySQL cluster in a private subnet (`lamp_app`)
-- Security groups to allow:
-  - HTTP (port 80)
-  - SSH (port 22)
-  - Aurora DB traffic from EC2
+Aurora MySQL RDS database (provisioned separately)
 
-### ✅ 2. Web Stack Configuration
-- Installed Apache and PHP
-- Moved application files to `/var/www/html`
-- Configured Apache to run on port `8080`
-- NGINX installed and configured as a **reverse proxy** on port `80`
-  - Routes traffic to Apache
+Security groups and IAM roles handled by Copilot
 
-### ✅ 3. Database Integration
-- Aurora endpoint securely configured in `db.php`
-- Tested connection from EC2 to Aurora
-- Verified all CRUD operations
+Load Balanced Web Service exposed via ALB on port 80
 
----
+✅ 2. Application Containerization
+Dockerfile includes:
 
-## 📊 Monitoring & Observability
+PHP 8.2 + Apache
 
-### ✅ CloudWatch Agent
-- Installed and configured to collect:
-  - `CPU`, `Memory`, and `Disk` usage
-  - Log files from NGINX and Apache
+PDO and MySQL extensions
 
-### ✅ CloudWatch Logs
-- Real-time log streaming from:
-  - `/var/log/nginx/access.log` → `lamp-nginx-access`
-  - `/var/log/nginx/error.log` → `lamp-nginx-error`
-  - `/var/log/httpd/access_log` → `lamp-apache-access`
-  - `/var/log/httpd/error_log` → `lamp-apache-error`
+Apache config and project files
 
-### ✅ CloudWatch Alarms
-| Alarm Name         | Condition                              | Action              |
-|--------------------|----------------------------------------|---------------------|
-| HighMemoryUsage    | Memory > 80% for 5 mins                | SNS Email Alert     |
-| HighCPUUsage       | CPU > 80% for 5 mins                   | SNS Email Alert     |
-| DiskUsageHigh      | Disk > 80% used                        | SNS Email Alert     |
-| Apache5xxErrors    | 500 errors detected in Apache logs     | SNS Email Alert     |
+Docker Compose used for local testing
 
----
+Secrets (DB credentials, host) injected using Copilot secrets
 
-## ✅ Best Practices Followed
+✅ 3. ECS Deployment with AWS Copilot
+copilot init to set up application
 
-- 🔐 IAM roles attached to EC2 for CloudWatch access
-- 🛡️ NGINX as reverse proxy for added security
-- 📈 Centralized monitoring and alerting with CloudWatch
-- 🔄 Aurora is scalable and highly available
-- 📦 Log rotation and streaming via CloudWatch
-- 🚀 Designed for future scaling and SSL support
+copilot svc deploy to deploy the PHP container
 
----
+Secrets managed via:
 
-## 📄 License
+bash
+Copy
+Edit
+copilot secret init
+Public URL auto-provisioned by Copilot via ALB
 
-This project is for educational and demonstration purposes. For production use, apply enhanced security, backups, and secret management.
+📊 Monitoring & Observability
+✅ CloudWatch Agent (on EC2 version)
+Logs collected from:
 
----
+/var/log/nginx/access.log
 
-## 🙌 Acknowledgments
+/var/log/nginx/error.log
 
-- AWS CloudWatch
-- NGINX & Apache documentation
-- Aurora MySQL engine
-- Amazon EC2 & VPC networking
+/var/log/httpd/access_log
+
+/var/log/httpd/error_log
+
+✅ CloudWatch Logs & Alarms
+Alarm Name	Condition	Action
+HighMemoryUsage	Memory > 80% for 5 mins	SNS Email Alert
+HighCPUUsage	CPU > 80% for 5 mins	SNS Email Alert
+DiskUsageHigh	Disk > 80% used	SNS Email Alert
+Apache5xxErrors	500 errors detected in Apache logs	SNS Email Alert
+
+✅ Best Practices Followed
+🛠️ ECS Fargate for serverless container hosting
+
+🔐 Secrets managed using AWS SSM Parameter Store via Copilot
+
+🛡️ NGINX as reverse proxy for added security
+
+📈 Centralized monitoring with CloudWatch
+
+🔄 Aurora DB used for scalable, managed MySQL-compatible database
+
+📦 CI/CD-ready architecture (future: GitHub Actions or CodePipeline)
+
+📄 License
+This project is for educational and demonstration purposes. For production use, apply enhanced security, backups, CI/CD, and auto-scaling.
+
+🙌 Acknowledgments
+AWS Copilot CLI
+
+Amazon ECS & Fargate
+
+Aurora RDS
+
+CloudWatch Logs and Alarms
+
+NGINX + Apache PHP stack

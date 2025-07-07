@@ -33,8 +33,9 @@ Edit
                        |  Amazon Aurora (MySQL) RDS   |
                        +------------------------------+
 
-For ECS deployment:
+
 ```
+For ECS deployment:
 pgsql
 Copy
 Edit

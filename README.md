@@ -40,6 +40,7 @@ For ECS deployment:
 pgsql
 Copy
 Edit
+```
                             +------------------------------+
                             |        AWS Copilot CLI       |
                             +------------------------------+

@@ -34,8 +34,9 @@ Edit
                        +------------------------------+
 
 
-```
+
 For ECS deployment:
+```
 pgsql
 Copy
 Edit

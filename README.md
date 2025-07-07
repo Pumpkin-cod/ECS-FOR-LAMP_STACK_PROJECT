@@ -7,6 +7,7 @@ Access the deployed PHP CRUD application:
 👉 http://lamp-a-publi-rovkasjtjmyu-1026018692.eu-west-1.elb.amazonaws.com/
 
 📐 Project Architecture
+```
 pgsql
 Copy
 Edit
@@ -33,7 +34,7 @@ Edit
                        +------------------------------+
 
 For ECS deployment:
-
+```
 pgsql
 Copy
 Edit
@@ -51,6 +52,7 @@ Edit
                                +-------v--------+
                                | Aurora DB (RDS)|
                                +----------------+
+
 📁 Application Structure
 Deployed in /var/www/html/:
 

@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = trim($_POST['password'] ?? '');
     $name = trim($_POST['name'] ?? '');
     $email = trim($_POST['email'] ?? '');
-    
+
     // Basic validation
     if (empty($username) || empty($password) || empty($name) || empty($email)) {
         $message = 'All fields are required!';
@@ -22,18 +22,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         try {
             // Check if username or email already exists
-            $checkStmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE email = ? OR name = ?");
+            $checkStmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE email = ? OR username = ?");
             $checkStmt->execute([$email, $username]);
-            
+
             if ($checkStmt->fetchColumn() > 0) {
                 $message = 'Username or email already exists!';
                 $messageType = 'error';
             } else {
                 // Insert new user
-                $stmt = $pdo->prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
+                $stmt = $pdo->prepare("INSERT INTO users (username, name, email, password) VALUES (?, ?, ?, ?)");
                 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-                
-                if ($stmt->execute([$name, $email, $hashedPassword])) {
+
+                if ($stmt->execute([$username, $name, $email, $hashedPassword])) {
                     $message = 'User created successfully!';
                     $messageType = 'success';
                     // Clear form data on success
@@ -50,8 +50,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -89,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .header h1 {
             font-size: 2.2rem;
             margin-bottom: 8px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .header p {
@@ -116,14 +118,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .back-btn:hover {
             background: rgba(255, 255, 255, 0.2);
             transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
         }
 
         .form-card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             animation: slideUp 0.6s ease-out;
         }
@@ -133,6 +135,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -226,7 +229,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             transition: all 0.3s ease;
         }
 
-        .form-control:focus + .input-icon {
+        .form-control:focus+.input-icon {
             color: #4f46e5;
         }
 
@@ -317,19 +320,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(180deg); }
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+            }
         }
 
         @media (max-width: 768px) {
             .container {
                 padding: 10px;
             }
-            
+
             .header h1 {
                 font-size: 1.8rem;
             }
-            
+
             .form-body {
                 padding: 30px 25px;
             }
@@ -346,6 +356,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     </style>
 </head>
+
 <body>
     <div class="floating-elements">
         <div class="floating-element" style="width: 60px; height: 60px; top: 10%; left: 10%; animation-delay: 0s;"></div>
@@ -358,7 +369,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <i class="fas fa-arrow-left"></i>
             Back to Dashboard
         </a>
-        
+
         <div class="header">
             <h1><i class="fas fa-user-plus"></i> Add New User</h1>
             <p>Create a new user account</p>
@@ -384,12 +395,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="form-group">
                         <label for="username">Username</label>
                         <div class="input-wrapper">
-                            <input type="text" 
-                                   id="username" 
-                                   name="username" 
-                                   class="form-control" 
-                                   value="<?php echo htmlspecialchars($username ?? ''); ?>"
-                                   required>
+                            <input type="text"
+                                id="username"
+                                name="username"
+                                class="form-control"
+                                value="<?php echo htmlspecialchars($username ?? ''); ?>"
+                                required>
                             <i class="fas fa-user input-icon"></i>
                         </div>
                     </div>
@@ -397,11 +408,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="form-group">
                         <label for="password">Password</label>
                         <div class="input-wrapper">
-                            <input type="password" 
-                                   id="password" 
-                                   name="password" 
-                                   class="form-control" 
-                                   required>
+                            <input type="password"
+                                id="password"
+                                name="password"
+                                class="form-control"
+                                required>
                             <i class="fas fa-lock input-icon"></i>
                         </div>
                         <div class="password-strength">
@@ -415,12 +426,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="form-group">
                         <label for="name">Full Name</label>
                         <div class="input-wrapper">
-                            <input type="text" 
-                                   id="name" 
-                                   name="name" 
-                                   class="form-control" 
-                                   value="<?php echo htmlspecialchars($name ?? ''); ?>"
-                                   required>
+                            <input type="text"
+                                id="name"
+                                name="name"
+                                class="form-control"
+                                value="<?php echo htmlspecialchars($name ?? ''); ?>"
+                                required>
                             <i class="fas fa-id-card input-icon"></i>
                         </div>
                     </div>
@@ -428,12 +439,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="form-group">
                         <label for="email">Email Address</label>
                         <div class="input-wrapper">
-                            <input type="email" 
-                                   id="email" 
-                                   name="email" 
-                                   class="form-control" 
-                                   value="<?php echo htmlspecialchars($email ?? ''); ?>"
-                                   required>
+                            <input type="email"
+                                id="email"
+                                name="email"
+                                class="form-control"
+                                value="<?php echo htmlspecialchars($email ?? ''); ?>"
+                                required>
                             <i class="fas fa-envelope input-icon"></i>
                         </div>
                     </div>
@@ -463,7 +474,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         passwordInput.addEventListener('input', function() {
             const password = this.value;
             const strength = calculatePasswordStrength(password);
-            
+
             strengthBar.style.width = strength.percentage + '%';
             strengthText.textContent = strength.text;
             strengthText.style.color = strength.color;
@@ -473,13 +484,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             let score = 0;
             let feedback = 'Weak';
             let color = '#ef4444';
-            
+
             if (password.length >= 8) score += 25;
             if (password.match(/[a-z]/)) score += 25;
             if (password.match(/[A-Z]/)) score += 25;
             if (password.match(/[0-9]/)) score += 25;
             if (password.match(/[^a-zA-Z0-9]/)) score += 25;
-            
+
             if (score >= 100) {
                 feedback = 'Very Strong';
                 color = '#10b981';
@@ -493,7 +504,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 feedback = 'Fair';
                 color = '#f97316';
             }
-            
+
             return {
                 percentage: Math.min(score, 100),
                 text: feedback,
@@ -526,11 +537,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             input.addEventListener('focus', function() {
                 this.parentElement.classList.add('focused');
             });
-            
+
             input.addEventListener('blur', function() {
                 this.parentElement.classList.remove('focused');
             });
         });
     </script>
 </body>
+
 </html>

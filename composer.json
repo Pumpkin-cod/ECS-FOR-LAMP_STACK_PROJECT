@@ -1,0 +1,16 @@
+{
+    "name": "catherinegyamfi/lamp-app",
+    "description": "A PHP LAMP stack app with Docker Compose",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Catherine",
+            "email": "katieboye44@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "vlucas/phpdotenv": "^5.6"
+    }
+}

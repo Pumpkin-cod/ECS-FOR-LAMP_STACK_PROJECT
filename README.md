@@ -1,5 +1,7 @@
 # **LAMP Stack Deployment on AWS with ECS, Aurora, NGINX Reverse Proxy, and CloudWatch Monitoring**
 
+
+
 This project demonstrates how to deploy a secure, scalable, and observable LAMP (Linux, Apache, MySQL-compatible Aurora, PHP) stack application on AWS. It includes reverse proxying via NGINX, containerization via Docker, and deployment to Amazon ECS using AWS Copilot CLI. Monitoring, logging, and alerting are integrated with CloudWatch.
 
 ---
@@ -9,6 +11,8 @@ This project demonstrates how to deploy a secure, scalable, and observable LAMP 
 Access the deployed PHP CRUD application:
 
 👉 http://lamp-a-publi-rovkasjtjmyu-1026018692.eu-west-1.elb.amazonaws.com/
+
+![Project Image](images/image.png)
 
 📐 Project Architecture
 ```
@@ -115,6 +119,7 @@ Public URL auto-provisioned by Copilot via ALB
 Logs collected from:
 
 - `/var/log/nginx/access.log`
+![Project Image](images/image2.png)
 - `/var/log/nginx/error.log`
 - `/var/log/httpd/access_log`
 - `/var/log/httpd/error_log`
@@ -128,6 +133,8 @@ Logs collected from:
 | DiskUsageHigh    | Disk > 80% used            | SNS Email Alert |
 | Apache5xxErrors  | 500 errors detected in Apache logs | SNS Email Alert |
 
+
+![Project Image](images/dashboard.png)
 ---
 
 ## ✅ **Best Practices Followed**
@@ -154,5 +161,5 @@ This project is for educational and demonstration purposes. For production use, 
 - Aurora RDS
 - CloudWatch Logs and Alarms
 - NGINX + Apache PHP stack
-copilot secret init
-copilot svc deploy
+- copilot secret init
+- copilot svc deploy
